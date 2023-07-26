@@ -45,6 +45,12 @@ class BSKYMessagingExtension {
      * @since 0.0.1
      */
     #linkTypes = {
+        // "bluesky": {
+        //     "name": "Bluesky",
+        //     "type": "social",
+        //     "icon": "fas fa-cloud-sun",
+        //     "regex": /bsky\.app\/profile\/([a-zA-Z0-9_]+)/
+        // },
         "discord": {
             "name": "Discord",
             "type": "messaging",
@@ -183,6 +189,18 @@ class BSKYMessagingExtension {
             "icon": "fas fa-coffee",
             "regex": /ko-fi\.com\/([a-zA-Z0-9_]+)/
         },
+        "linktree": {
+            "name": "Linktree",
+            "type": "linkhub",
+            "icon": "fas fa-tree",
+            "regex": /linktr\.ee\/([a-zA-Z0-9_]+)/
+        },
+        "carrd": {
+            "name": "Carrd",
+            "type": "linkhub",
+            "icon": "fas fa-address-card",
+            "regex": /([a-zA-Z0-9_]+\.carrd\.co)/
+        },
     };
 
     /**
@@ -212,6 +230,16 @@ class BSKYMessagingExtension {
             }
         },
         "content": {
+            "color": "#FFFFFF",
+            "background": "#7289DA",
+            "border": "#7289DA",
+            "hover": {
+                "color": "#7289DA",
+                "background": "#FFFFFF",
+                "border": "#7289DA"
+            }
+        },
+        "linkhub": {
             "color": "#FFFFFF",
             "background": "#7289DA",
             "border": "#7289DA",
@@ -258,15 +286,57 @@ class BSKYMessagingExtension {
                 "background": "#FFFFFF",
                 "border": "#7289DA"
             }
+        },
+        "linkhub": {
+            "color": "#FFFFFF",
+            "background": "#7289DA",
+            "border": "#7289DA",
+            "hover": {
+                "color": "#7289DA",
+                "background": "#FFFFFF",
+                "border": "#7289DA"
+            }
         }
     };
 
     /**
      * @constant {Object} buttonStylesOverrides - Style overrides for specific link types
      * 
+     * @todo Probably integrate the brand colors into the linkTypes object instead of having a separate object for overrides and just use logic to handle the hover style inversions.
+     * 
      * @since 0.0.1
      */
     #buttonStylesOverrides = {
+        // "bluesky": {
+        //     "color": "rgb(0, 133, 255)",
+        //     "background": "#0000",
+        //     "border": "#0000",
+        //     "hover": {
+        //         "color": "#fff",
+        //         "background": "#0000",
+        //         "border": "#0000"
+        //     }
+        // },
+        "telegram": {
+            "color": "#FFFFFF",
+            "background": "#0088CC",
+            "border": "#0088CC",
+            "hover": {
+                "color": "#0088CC",
+                "background": "#FFFFFF",
+                "border": "#0088CC"
+            }
+        },
+        "discord": {
+            "color": "#FFFFFF",
+            "background": "#7289DA",
+            "border": "#7289DA",
+            "hover": {
+                "color": "#7289DA",
+                "background": "#FFFFFF",
+                "border": "#7289DA"
+            }
+        },
         "twitch": {
             "color": "#FFFFFF",
             "background": "#6441A4",
@@ -287,14 +357,34 @@ class BSKYMessagingExtension {
                 "border": "#FF0000"
             }
         },
-        "discord": {
+        "twitter": {
             "color": "#FFFFFF",
-            "background": "#7289DA",
-            "border": "#7289DA",
+            "background": "#1DA1F2",
+            "border": "#1DA1F2",
             "hover": {
-                "color": "#7289DA",
+                "color": "#1DA1F2",
                 "background": "#FFFFFF",
-                "border": "#7289DA"
+                "border": "#1DA1F2"
+            }
+        },
+        "instagram": {
+            "color": "#FFFFFF",
+            "background": "#E1306C",
+            "border": "#E1306C",
+            "hover": {
+                "color": "#E1306C",
+                "background": "#FFFFFF",
+                "border": "#E1306C"
+            }
+        },
+        "facebook": {
+            "color": "#FFFFFF",
+            "background": "#1877F2",
+            "border": "#1877F2",
+            "hover": {
+                "color": "#1877F2",
+                "background": "#FFFFFF",
+                "border": "#1877F2"
             }
         },
     };
@@ -370,13 +460,14 @@ class BSKYMessagingExtension {
      * 
      * @param {string} selector - The selector for the profile bio element
      * 
-     * @returns {object} result             - The profile bio
-     * @returns {string} result.element     - The profile bio element
-     * @returns {string} result.text        - The profile bio text
-     * @returns {string} result.html        - The profile bio html
-     * @returns {object} result.links       - The profile bio links array
-     * @returns {string} result.links.url   - The profile bio link url
-     * @returns {string} result.links.text  - The profile bio link text
+     * @returns {object} result                 - The profile bio
+     * @returns {element} result.element        - The profile bio element
+     * @returns {string} result.text            - The profile bio text
+     * @returns {string} result.html            - The profile bio html
+     * @returns {object} result.links           - The profile bio links array
+     * @returns {string} result.links.url       - The profile bio link url
+     * @returns {string} result.links.text      - The profile bio link text
+     * @returns {element} result.links.element  - The profile bio link element
      * 
      * @since 0.0.1
      * 
@@ -414,7 +505,8 @@ class BSKYMessagingExtension {
         links.forEach(link => {
             result.links.push({
                 url: link.href,
-                text: link.innerText
+                text: link.innerText,
+                element: link
             });
         });
 
@@ -453,7 +545,7 @@ class BSKYMessagingExtension {
                     }
 
                     // Get the existing link element and its attributes
-                    let linkOriginal = bio.element.querySelector(`a[href="${link.url}"]`);
+                    let linkOriginal = link.element;
                     let linkAttributes = linkOriginal.attributes;
 
                     // Create the hyperlink element
@@ -612,7 +704,6 @@ class BSKYMessagingExtension {
         // Bind the script to the DOMNodeInserted event
         document.addEventListener("DOMNodeInserted", debounce((e) => {
             if (e.relatedNode.tagName !== "A") {
-                console.log("DOMNodeInserted", e.relatedNode);
                 this.runProfilePage();
             }
         }, 500));
