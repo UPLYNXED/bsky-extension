@@ -522,6 +522,8 @@ class BSKY_Ext_Profiles {
 					// Create the hyperlink element
 					let hyperlink = document.createElement("a");
 
+					hyperlink.setAttribute("data-bsky-e", `profile-link-${key}`);
+
 					// Add the link attributes to the hyperlink element
 					for (let i = 0; i < linkAttributes.length; i++) {
 						hyperlink.setAttribute(linkAttributes[i].name, linkAttributes[i].value);
@@ -581,9 +583,11 @@ class BSKY_Ext_Profiles {
 		let bio = element;
 
 		// Check if the profile bio element exists
-		if (bio) {
+		if (bio && bio.innerHTML !== formattedBio && !bio.attributes["data-bsky-e"]) {
 			// Insert the formatted profile bio html into the page
 			bio.innerHTML = formattedBio;
+
+			bio.setAttribute("data-bsky-e", "profile-bio");
 
 			// Return true
 			return true;
@@ -636,6 +640,8 @@ class BSKY_Ext_Profiles {
 
 					// Create the button element
 					let button = document.createElement("button");
+
+					button.setAttribute("data-bsky-e", `profile-button-${key}`);
 
 					// Add the button attributes to the button element
 					button.setAttribute("title", `${value.name} - ${link.text}`);
@@ -757,21 +763,22 @@ class BSKY_Ext_Profiles {
 		}
 
 		// Check if the profile bio has any links
-		if (bio.links.length < 1) {
-			return;
+		if (bio.links.length > 0) {
+			// Format the profile bio
+			let formattedBio = this.#formatProfileBio( bio, {linkTypes: this.#linkTypes, linkStyles: this.#linkStyles} );
+
+			// Insert the formatted profile bio
+			this.#insertProfileBio( bio.element, formattedBio );
+
+			// Format the profile buttons
+			let formattedButtons = this.#formatProfileButtons( bio, {linkTypes: this.#linkTypes, buttonStyles: this.#buttonStyles, buttonStylesOverrides: this.#buttonStylesOverrides} );
+
+			// Insert the formatted profile buttons
+			this.#insertProfileButtons( bio.element, formattedButtons );
 		}
 
-		// Format the profile bio
-		let formattedBio = this.#formatProfileBio( bio, {linkTypes: this.#linkTypes, linkStyles: this.#linkStyles} );
-
-		// Insert the formatted profile bio
-		this.#insertProfileBio( bio.element, formattedBio );
-
-		// Format the profile buttons
-		let formattedButtons = this.#formatProfileButtons( bio, {linkTypes: this.#linkTypes, buttonStyles: this.#buttonStyles, buttonStylesOverrides: this.#buttonStylesOverrides} );
-
-		// Insert the formatted profile buttons
-		this.#insertProfileButtons( bio.element, formattedButtons );
+		// Parse emojis
+		BSKY_E_E.parseEmojis( bio.element );
 	}
 
 
@@ -803,11 +810,17 @@ class BSKY_Ext_Profiles {
 		});
 
 		// Bind the script to the DOMNodeInserted event
-		document.addEventListener("DOMNodeInserted", _.debounce((e) => {
-			if (e.relatedNode.tagName !== "A" && e.relatedNode.tagName !== "BUTTON") {
+		document.addEventListener( "DOMNodeInserted", _.debounce((e) => {
+			if (window.pause_event !== true) {
+				// Avoid infinite loops, don't run on the script's own elements
+				if (e.relatedNode && e.relatedNode.closest && e.relatedNode.closest("[data-bsky-e]")) {
+					return;
+				}
+
+				// Run the script on page load
 				this.runProfilePage();
 			}
-		}, 500));
+		}, 20));
 	}
 
 	/**
@@ -1007,10 +1020,36 @@ class BSKY_Ext_Emojis {
 	 * @since 0.0.2
 	 */
 	#init() {
+		// Array of data-testid values related to pages
+		let pageSelectors = [
+			"[data-testid='profileView']",
+			"[data-testid*='followingFeedPage']",
+			"[data-testid='customFeedPage']",
+			"[data-testid='notificationsScreen']",
+			"[data-testid*='postThreadItem-']",
+		];
+
 		// Bind the script to the DOMNodeInserted event
-		document.addEventListener("DOMNodeInserted", _.debounce((e) => {
-			console.log(e);
-		}, 500));
+		document.addEventListener("DOMNodeInserted", (e) => {
+			// Check if the element is a page element or contains a page element selector
+			if ( e.target.dataset && e.target.dataset.testid && pageSelectors.includes( e.target.dataset.testid ) ) {
+				console.log( 'target match: ', e.target );
+				this.parseInChildren( e.target, { selector: "[data-testid='postContent']" } );
+			} else if ( e.target.children && e.target.children.length > 0 && e.target.querySelector( pageSelectors.join(",") ) ) {
+				console.log( 'closest match: ', e.target.querySelector( pageSelectors.join(",") ) );
+				this.parseInChildren( e.target, { selector: "[data-testid='postContent']" } );
+			}
+
+			// Check which page selector is currently visible
+			pageSelectors.forEach( selector => {
+				let page = document.querySelector( selector );
+
+				if ( page && page.offsetParent !== null ) {
+					console.log( 'current page match: ', selector );
+					this.parseInChildren( page );
+				}
+			});
+		});
 	}
 
 	/**
@@ -1036,15 +1075,32 @@ class BSKY_Ext_Emojis {
 	 * @method parseEmojis
 	 * @description Formats the emojis to use the external emojis
 	 * 
-	 * @param {element} element		- The element to format the emojis in
+	 * @param {element | string} element		- The element or string to format the emojis in
+	 * 
+	 * @return {element | string} result		- The formatted element or string matching the type of the element passed in
 	 * 
 	 * @since 0.0.2
 	 */
 	parseEmojis( element ) {
+		let type = typeof element;
+		// Create a temporary div element to push the element into if a string was passed in
+		if ( typeof element === "string" ) {
+			let x = document.createElement( "div" );
+			x.innerHTML = element;
+			element = x;
+		}
+
 		// Parse the emojis in the element if it has unicode emojis and isn't already parsed
 		if ( this.#hasUnicodeEmoji( element ) && !this.#hasTwemoji( element ) ) {
 			twemoji.parse( element );
 		}
+
+		// Return the element or string
+		if ( type === "string" ) {
+			return element.innerHTML;
+		}
+
+		return element;
 	}
 
 	/**
@@ -1058,7 +1114,7 @@ class BSKY_Ext_Emojis {
 	 * 
 	 * @since 0.0.2
 	 */
-	parseInChildren( element ) {
+	parseInChildren( element, args = { selector: false, recursive: false } ) {
 		// Get the arguments
 		let selector 	= args.selector 	|| false;
 		let recursive 	= args.recursive 	|| false;
@@ -1072,7 +1128,10 @@ class BSKY_Ext_Emojis {
 		}
 
 		// Loop through the element's children
-		children.forEach( child => {
+		for ( let i = 0; i < children.length; i++ ) {
+			// Get the child
+			let child = children[i];
+
 			// If a selector was passed in. Check if the child doesn't match the selector and return if it doesn't
 			if ( selector && !child.matches( selector ) ) {
 				// Check the child's children if recursive is true
@@ -1088,7 +1147,7 @@ class BSKY_Ext_Emojis {
 				// Parse the child's emojis
 				this.parseEmojis( child );
 			}
-		});
+		}
 
 		return true;
 	}
@@ -1097,13 +1156,20 @@ class BSKY_Ext_Emojis {
 	 * @method hasUnicodeEmoji
 	 * @description Checks if the element has (unicode) emojis
 	 * 
-	 * @param {element} element		- The element to check for emojis
+	 * @param {element | string} element		- The element or string to check for emojis
 	 * 
 	 * @returns {boolean} result	- Whether or not the element has emojis
 	 * 
 	 * @since 0.0.2
 	 */
 	#hasUnicodeEmoji( element ) {
+		// Create a temporary div element to push the element into if a string was passed in
+		if ( typeof element === "string" ) {
+			let x = document.createElement( "div" );
+			x.innerHTML = element;
+			element = x;
+		}
+
 		// Check if the element has unicode emojis
 		if ( element.innerText.match( /[\u{1F000}-\u{1FFFF}]/u ) ) {
 			return true;
@@ -1116,13 +1182,20 @@ class BSKY_Ext_Emojis {
 	 * @method hasTwemoji
 	 * @description Checks if the element has twemojis
 	 * 
-	 * @param {element} element		- The element to check for twemojis
+	 * @param {element | string} element		- The element or string to check for twemojis
 	 * 
 	 * @returns {boolean} result		- Whether or not the element has twemojis
 	 * 
 	 * @since 0.0.2
 	 */
 	#hasTwemoji( element ) {
+		// Create a temporary div element to push the element into if a string was passed in
+		if ( typeof element === "string" ) {
+			let x = document.createElement( "div" );
+			x.innerHTML = element;
+			element = x;
+		}
+
 		// Check if the element has twemojis
 		if ( element.querySelector( "img.emoji" ) ) {
 			return true;
