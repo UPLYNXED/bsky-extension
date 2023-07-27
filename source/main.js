@@ -32,13 +32,13 @@ class BSKY_Ext_Profiles {
 		"insertButtons": true,
 		"showIconsInline": true,
 		"showIconsButtons": true,
-		"inlineLinkText": 'original',									   // original, icon, name, path (the last part of the url)
-		"buttonLinkText": 'name',										   // original, icon, name
-		"inlineLinkTypes": ['messaging', 'content', 'social', 'linkhub'],   // messaging, social, content, linkhub
-		"buttonTypes": ['messaging', 'social', 'linkhub'],				  // messaging, social, content, linkhub
-		"resolveDiscordInvites": true,									  // Whether or not to resolve Discord invites to the server name
+		"inlineLinkText": 'original',										// original, icon, name, path (the last part of the url)
+		"buttonLinkText": 'name',											// original, icon, name
+		"inlineLinkTypes": ['messaging', 'content', 'social', 'linkhub'],	// messaging, social, content, linkhub
+		"buttonTypes": ['messaging', 'social', 'linkhub'],					// messaging, social, content, linkhub
+		"resolveDiscordInvites": true,										// Whether or not to resolve Discord invites to the server name
 		"cacheDiscordInvites": true,										// Whether or not to cache Discord invites to the server name to prevent repeated requests
-		"bioSelector": "[data-testid='profileHeaderDescription']"		   // The selector for the profile bio element
+		"bioSelector": "[data-testid='profileHeaderDescription']"			// The selector for the profile bio element
 	};
 
 	/**
@@ -410,60 +410,6 @@ class BSKY_Ext_Profiles {
 	};
 
 	/**
-	 * @constant {Array} ExternalResources - The external resources for the script
-	 * 
-	 * @since 0.0.1
-	 */
-	#ExternalResources = [
-		{
-			"type": "stylesheet",
-			"src": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
-		},
-		{
-			"type": "script",
-			"src": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js",
-		}
-	];
-
-	/**
-	 * @method loadExternalResources
-	 * @description Loads external resources for the script
-	 * @uses FontAwesome (https://fontawesome.com/)
-	 * 
-	 * @since 0.0.1
-	 */
-	#loadExternalResources() {
-		// Create the resources array to put the elements in that will be added to the head
-		let resources = [];
-
-		// Loop through the external resources
-		this.#ExternalResources.forEach(resource => {
-			switch (resource.type) {
-				case "stylesheet":
-					let stylesheet = document.createElement("link");
-					stylesheet.setAttribute("rel", "stylesheet");
-					stylesheet.setAttribute("href", resource.src);
-					resources.push(stylesheet);
-					break;
-				case "script":
-					let script = document.createElement("script");
-					script.setAttribute("src", resource.src);
-					resources.push(script);
-					break;
-				default:
-					break;
-			}
-		});
-
-		// Add the resources to the head
-		resources.forEach(resource => {
-			document.head.appendChild(resource);
-		});
-
-		return true;
-	}
-
-	/**
 	 * @method setOptions
 	 * @description Sets the options for the script and merges the user's settings with the default options
 	 * 
@@ -832,9 +778,6 @@ class BSKY_Ext_Profiles {
 	 * @since 0.0.1
 	 */
 	init() {
-		// Load external resources
-		this.#loadExternalResources();
-
 		// Run the script on page load
 		this.runProfilePage();
 
@@ -856,7 +799,7 @@ class BSKY_Ext_Profiles {
 		});
 
 		// Bind the script to the DOMNodeInserted event
-		document.addEventListener("DOMNodeInserted", debounce((e) => {
+		document.addEventListener("DOMNodeInserted", _.debounce((e) => {
 			if (e.relatedNode.tagName !== "A" && e.relatedNode.tagName !== "BUTTON") {
 				this.runProfilePage();
 			}
@@ -878,114 +821,462 @@ class BSKY_Ext_Profiles {
 	}
 }
 
-// Run the script
-let BSKY_E_P = new BSKY_Ext_Profiles();
+/***********************************************/ // TODO: Split off into separate files eventually after we get multi class working properly
 
 /**
- * _.js throttle function
- * @source https://underscorejs.org/docs/modules/throttle.html
+ * @class BSKY_Ext_Imports
+ * @description Adds external dependencies to the page
+ * 
+ * @since 0.0.2
  */
-function throttle(func, wait, options) {
-	var timeout, context, args, result;
-	var previous = 0;
-	if (!options) options = {};
+class BSKY_Ext_Imports {
+	/**
+	 * @constant {Array} externalResources - The external resources for the script
+	 * 
+	 * @since 0.0.1
+	 */
+	#externalResources = [
+		{
+			"type": "stylesheet",
+			"src": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+		},
+		{
+			"type": "script",
+			"src": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js",
+		}
+	];
 
-	var later = function() {
-		previous = options.leading === false ? 0 : new Date().getTime();
-		timeout = null;
-		result = func.apply(context, args);
-		if (!timeout) context = args = null;
-	};
+	/**
+	 * @method loadExternalResources
+	 * @description Loads external resources for the script
+	 * @uses FontAwesome (https://fontawesome.com/)
+	 * 
+	 * @since 0.0.1
+	 */
+	#loadExternalResources( args = { externalResources: this.#externalResources } ) {
+		// Get the arguments
+		let externalResources = args.externalResources || this.#externalResources;
 
-	var throttled = function() {
-		var _now = new Date().getTime();
-		if (!previous && options.leading === false) previous = _now;
-		var remaining = wait - (_now - previous);
-		context = this;
-		args = arguments;
-		if (remaining <= 0 || remaining > wait) {
-			if (timeout) {
-				clearTimeout(timeout);
-				timeout = null;
+		// Create the resources array to put the elements in that will be added to the head
+		let resources = [];
+
+		// Loop through the external resources
+		externalResources.forEach( resource => {
+			switch ( resource.type ) {
+				case "stylesheet":
+					let stylesheet = document.createElement( "link" );
+					stylesheet.setAttribute( "rel", "stylesheet" );
+					stylesheet.setAttribute( "href", resource.src );
+					
+					if (resource.attributes) {
+						Object.entries( resource.attributes ).forEach( attribute => {
+							script.setAttribute( attribute[0], attribute[1] );
+						});
+					}
+
+					resources.push(stylesheet);
+					break;
+				case "style":
+					let style = document.createElement( "style" );
+					style.setAttribute( "type", "text/css" );
+					style.innerHTML = resource.content;
+					
+					if (resource.attributes) {
+						Object.entries( resource.attributes ).forEach( attribute => {
+							script.setAttribute( attribute[0], attribute[1] );
+						});
+					}
+
+					resources.push( style );
+					break;
+				case "script":
+					let script = document.createElement( "script" );
+					script.setAttribute( "src", resource.src) ;
+					
+					if (resource.attributes) {
+						Object.entries( resource.attributes ).forEach( attribute => {
+							script.setAttribute( attribute[0], attribute[1] );
+						});
+					}
+
+					resources.push( script );
+					break;
+				default:
+					break;
 			}
-			previous = _now;
+		});
+
+		// Add the resources to the head
+		resources.forEach( resource => {
+			document.head.appendChild( resource );
+		});
+
+		return true;
+	}
+
+	/**
+	 * @method addExternalResource
+	 * @description Adds an external resource to the script
+	 * 
+	 * @param {object | array} resource		- The external resource to add to the script
+	 * 
+	 * @returns {boolean} result			- Whether or not the external resource was added successfully
+	 * 
+	 * @since 0.0.2
+	 */
+	addExternalResource( resources ) {
+		// Check if the resource is an array or object, and if it's an object, convert it to an array containing the object
+		if (typeof resources === "object" && !Array.isArray( resources )) {
+			resources = [ resource ];
+		}
+
+		// Check if each resource is valid
+		resources.forEach( resource => {
+			if ( !resource.type || ( !resource.src && !resource.content ) ) {
+				// remove the invalid resource from the array
+				resources.splice( resources.indexOf( resource ), 1 );
+
+				return false;
+			}
+		});
+
+		// Add the resources to the external resources array
+		this.#externalResources = this.#externalResources.concat( resources );
+
+		// Load the external resource
+		this.#loadExternalResources({ externalResources: resources });
+
+		return true;
+	}
+
+	/**
+	 * @constructor
+	 * 
+	 * @since 0.0.2
+	 */
+	constructor( args = {externalResources: this.#externalResources, merge: false} ) {
+		// Get the arguments
+		let merge = args.merge || false;
+
+		// Check if the external resources should be merged with the default resources or not
+		if (merge) {
+			this.#externalResources = Object.assign({}, this.#externalResources, args.externalResources);
+		} else {
+			this.#externalResources = args.externalResources || this.#externalResources;
+		}
+
+		// Load external resources
+		this.#loadExternalResources();
+	}
+}
+
+/***********************************************/
+
+/**
+ * @class BSKY_Ext_Emojis
+ * @description Implements alternate emoji styles for Bluesky
+ * 
+ * @since 0.0.2
+ */
+
+class BSKY_Ext_Emojis {
+	/**
+	 * @constructor
+	 * 
+	 * @since 0.0.2
+	 */
+	constructor() {
+		// Stub for now
+		this.#init();
+
+		// Set the CSS for the .emoji class
+		this.#setCSS();
+
+		// Load external emojis
+		this.#loadExternalEmojis();
+	}
+
+	/**
+	 * @method init
+	 * @description Intialize the script and binds it to the DOMNodeInserted event
+	 *
+	 * @since 0.0.2
+	 */
+	#init() {
+		// Bind the script to the DOMNodeInserted event
+		document.addEventListener("DOMNodeInserted", _.debounce((e) => {
+			console.log(e);
+		}, 500));
+	}
+
+	/**
+	 * @method loadExternalEmojis
+	 * @description Loads external emojis for the script
+	 * 
+	 * @since 0.0.2
+	 */
+	#loadExternalEmojis() {
+		BSKY_E_I.addExternalResource(
+		[
+			{
+				"type": "script",
+				"src": "https://unpkg.com/twemoji@14.0.2/dist/twemoji.min.js",
+				"attributes": {
+					"crossorigin": "anonymous",
+				}
+			}
+		]);
+	}
+
+	/**
+	 * @method parseEmojis
+	 * @description Formats the emojis to use the external emojis
+	 * 
+	 * @param {element} element		- The element to format the emojis in
+	 * 
+	 * @since 0.0.2
+	 */
+	parseEmojis( element ) {
+		// Parse the emojis in the element if it has unicode emojis and isn't already parsed
+		if ( this.#hasUnicodeEmoji( element ) && !this.#hasTwemoji( element ) ) {
+			twemoji.parse( element );
+		}
+	}
+
+	/**
+	 * @method parseInChildren
+	 * @description Parses the emojis in the element's children
+	 * 
+	 * @param {element} element		- The element to parse the emojis in
+	 * @param {object} args			- The arguments for the function
+	 * @param {string} args.selector	- The selector for the element's children to parse
+	 * @param {boolean} args.recursive	- Whether or not to recursively parse the element's children
+	 * 
+	 * @since 0.0.2
+	 */
+	parseInChildren( element ) {
+		// Get the arguments
+		let selector 	= args.selector 	|| false;
+		let recursive 	= args.recursive 	|| false;
+		
+		// Get the element's children
+		let children = element.children;
+
+		// Check if the element has children
+		if ( !children || children.length < 1 ) {
+			return false;
+		}
+
+		// Loop through the element's children
+		children.forEach( child => {
+			// If a selector was passed in. Check if the child doesn't match the selector and return if it doesn't
+			if ( selector && !child.matches( selector ) ) {
+				// Check the child's children if recursive is true
+				if ( recursive ) {
+					this.parseInChildren( child, args );
+				}
+
+				return;
+			}
+
+			// Check if the child has unicode emojis
+			if ( this.#hasUnicodeEmoji( child ) ) {
+				// Parse the child's emojis
+				this.parseEmojis( child );
+			}
+		});
+
+		return true;
+	}
+
+	/**
+	 * @method hasUnicodeEmoji
+	 * @description Checks if the element has (unicode) emojis
+	 * 
+	 * @param {element} element		- The element to check for emojis
+	 * 
+	 * @returns {boolean} result	- Whether or not the element has emojis
+	 * 
+	 * @since 0.0.2
+	 */
+	#hasUnicodeEmoji( element ) {
+		// Check if the element has unicode emojis
+		if ( element.innerText.match( /[\u{1F000}-\u{1FFFF}]/u ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @method hasTwemoji
+	 * @description Checks if the element has twemojis
+	 * 
+	 * @param {element} element		- The element to check for twemojis
+	 * 
+	 * @returns {boolean} result		- Whether or not the element has twemojis
+	 * 
+	 * @since 0.0.2
+	 */
+	#hasTwemoji( element ) {
+		// Check if the element has twemojis
+		if ( element.querySelector( "img.emoji" ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @method setCSS
+	 * @description Sets the CSS for the .emoji class
+	 * 
+	 * @since 0.0.2
+	 */
+	#setCSS() {
+		// Create the CSS string
+		let css = `
+			img.emoji {
+				height: 1.2em;
+				line-height: 1em;
+				vertical-align: -20%;
+			}
+		`;
+
+		// Load the CSS into a style element
+		BSKY_E_I.addExternalResource([
+			{
+				"type": "style",
+				"content": css
+			}
+		]);
+
+		return true;
+	}
+}
+
+/***********************************************/
+
+/**
+ * @class UnderscoreJS
+ * @description Select Underscore.js functions
+ * 
+ * @since 0.0.2
+ */
+class UnderscoreJS {
+	/**
+	 * _.js throttle function
+	 * @source https://underscorejs.org/docs/modules/throttle.html
+	 */
+	throttle(func, wait, options) {
+		var timeout, context, args, result;
+		var previous = 0;
+		if (!options) options = {};
+
+		var later = function() {
+			previous = options.leading === false ? 0 : new Date().getTime();
+			timeout = null;
 			result = func.apply(context, args);
 			if (!timeout) context = args = null;
-		} else if (!timeout && options.trailing !== false) {
-			timeout = setTimeout(later, remaining);
-		}
-		return result;
-	};
+		};
 
-	throttled.cancel = function() {
-		clearTimeout(timeout);
-		previous = 0;
-		timeout = context = args = null;
-	};
+		var throttled = function() {
+			var _now = new Date().getTime();
+			if (!previous && options.leading === false) previous = _now;
+			var remaining = wait - (_now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0 || remaining > wait) {
+				if (timeout) {
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				previous = _now;
+				result = func.apply(context, args);
+				if (!timeout) context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
 
-	return throttled;
+		throttled.cancel = function() {
+			clearTimeout(timeout);
+			previous = 0;
+			timeout = context = args = null;
+		};
+
+		return throttled;
+	}
+
+	/**
+	 * _.js Debounce function
+	 * @source https://underscorejs.org/docs/modules/debounce.html
+	 */
+	debounce(func, wait, immediate) {
+		var timeout, previous, args, result, context;
+
+		var later = function() {
+			var passed = new Date().getTime() - previous;
+			if (wait > passed) {
+				timeout = setTimeout(later, wait - passed);
+			} else {
+				timeout = null;
+				if (!immediate) result = func.apply(context, args);
+				if (!timeout) args = context = null;
+			}
+		};
+
+		var debounced = this.#restArguments(function(_args) {
+			context = this;
+			args = _args;
+			previous = new Date().getTime();
+			if (!timeout) {
+				timeout = setTimeout(later, wait);
+				if (immediate) result = func.apply(context, args);
+			}
+			return result;
+		});
+
+		debounced.cancel = function() {
+			clearTimeout(timeout);
+			timeout = args = context = null;
+		};
+
+		return debounced;
+	}
+
+	/**
+	 * _.js restArguments function
+	 * @source https://underscorejs.org/docs/modules/restArguments.html
+	 */
+	#restArguments(func, startIndex) {
+		startIndex = startIndex == null ? func.length - 1 : +startIndex;
+		return function() {
+			var length = Math.max(arguments.length - startIndex, 0),
+				rest = Array(length),
+				index = 0;
+			for (; index < length; index++) {
+				rest[index] = arguments[index + startIndex];
+			}
+			switch (startIndex) {
+				case 0: return func.call(this, rest);
+				case 1: return func.call(this, arguments[0], rest);
+				case 2: return func.call(this, arguments[0], arguments[1], rest);
+			}
+			var args = Array(startIndex + 1);
+			for (index = 0; index < startIndex; index++) {
+				args[index] = arguments[index];
+			}
+			args[startIndex] = rest;
+			return func.apply(this, args);
+		};
+	}
 }
 
-/**
- * _.js Debounce function
- * @source https://underscorejs.org/docs/modules/debounce.html
- */
-function debounce(func, wait, immediate) {
-	var timeout, previous, args, result, context;
+/***********************************************/
 
-	var later = function() {
-		var passed = new Date().getTime() - previous;
-		if (wait > passed) {
-			timeout = setTimeout(later, wait - passed);
-		} else {
-			timeout = null;
-			if (!immediate) result = func.apply(context, args);
-			if (!timeout) args = context = null;
-		}
-	};
-
-	var debounced = restArguments(function(_args) {
-		context = this;
-		args = _args;
-		previous = new Date().getTime();
-		if (!timeout) {
-			timeout = setTimeout(later, wait);
-			if (immediate) result = func.apply(context, args);
-		}
-		return result;
-	});
-
-	debounced.cancel = function() {
-		clearTimeout(timeout);
-		timeout = args = context = null;
-	};
-
-	return debounced;
-}
-
-/**
- * _.js restArguments function
- * @source https://underscorejs.org/docs/modules/restArguments.html
- */
-function restArguments(func, startIndex) {
-	startIndex = startIndex == null ? func.length - 1 : +startIndex;
-	return function() {
-		var length = Math.max(arguments.length - startIndex, 0),
-			rest = Array(length),
-			index = 0;
-		for (; index < length; index++) {
-			rest[index] = arguments[index + startIndex];
-		}
-		switch (startIndex) {
-			case 0: return func.call(this, rest);
-			case 1: return func.call(this, arguments[0], rest);
-			case 2: return func.call(this, arguments[0], arguments[1], rest);
-		}
-		var args = Array(startIndex + 1);
-		for (index = 0; index < startIndex; index++) {
-			args[index] = arguments[index];
-		}
-		args[startIndex] = rest;
-		return func.apply(this, args);
-	};
-}
+const _ = new UnderscoreJS();
+const BSKY_E_I = new BSKY_Ext_Imports();
+const BSKY_E_P = new BSKY_Ext_Profiles();
+const BSKY_E_E = new BSKY_Ext_Emojis();
