@@ -3,14 +3,14 @@
  * @description A simple script to add buttons for popular messaging apps to profile pages on Bluesky.
  * @website https://github.com/UPLYNXED/bsky-extension
  * @license MIT
- * @version 0.0.1
+ * @version 0.0.2
  * 
  * @author Avelyn "UPLYNXED" Neervoort
  * @contact https://uplynxed.valk.cam/
  * 
  * @fileoverview Main js file for the project
  * @created 2023-07-26
- * @lastModified 2023-07-26
+ * @lastModified 2023-07-27
  */
 
 // Path: source\main.js
@@ -573,6 +573,8 @@ class BSKY_Ext_Profiles {
 	 * @param {string} formattedBio	- The formatted profile bio html
 	 * 
 	 * @returns {boolean} result	- Whether or not the profile bio was inserted successfully
+	 * 
+	 * @since 0.0.1
 	 */
 	#insertProfileBio(element, formattedBio) {
 		// Get the profile bio element
@@ -719,6 +721,8 @@ class BSKY_Ext_Profiles {
 	 * @description Checks if the current page is a profile page
 	 * 
 	 * @returns {boolean} result		- Whether or not the current page is a profile page
+	 * 
+	 * @since 0.0.1
 	 */
 	isProfilePage() {
 		// Get the current page url
