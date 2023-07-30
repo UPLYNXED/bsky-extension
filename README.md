@@ -14,12 +14,7 @@ It is intended to be used with [Tampermonkey](https://www.tampermonkey.net/) or 
     - [Browser Extension (Chrome/Firefox/Edge/etc.)](#browser-extension-chromefirefoxedgeetc)
   - [Usage](#usage)
     - [Profile Bio Links / Buttons](#profile-bio-links--buttons)
-      - [~~Discord Server Invite Links Resolver~~](#discord-server-invite-links-resolver)
     - [Emoji Sets (Twemoji, EmojiOne, etc.)](#emoji-sets-twemoji-emojione-etc)
-    - [~~Embedding External Media (YouTube, Twitter, etc.)~~](#embedding-external-media-youtube-twitter-etc)
-    - [~~Theme Settings~~](#theme-settings)
-    - [~~Custom CSS~~](#custom-css)
-    - [~~DM System~~](#dm-system)
   - [Contributing](#contributing)
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
@@ -55,11 +50,11 @@ It is intended to be used with [Tampermonkey](https://www.tampermonkey.net/) or 
 ## Installation
 ### Userscript (Tampermonkey/Greasemonkey)
 1. Install Tampermonkey or Greasemonkey.
-~~2. Copy the contents of `bsky-features.user.js` into a new script in Tampermonkey or Greasemonkey.~~
+2. ~~Copy the contents of `bsky-features.user.js` into a new script in Tampermonkey or Greasemonkey.~~
 3. Go to Bluesky and enjoy!
 
 ### Browser Extension (Chrome/Firefox/Edge/etc.)
-~~1. Install the extension for your browser, download the latest release from the [Releases]() page.~~
+1. ~~Install the extension for your browser, download the latest release from the [Releases]() page.~~
 2. Go to Bluesky and enjoy!
 
 ---
