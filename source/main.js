@@ -51,156 +51,252 @@ class BSKY_Ext_Profiles {
 		//	 "name": "Bluesky",
 		//	 "type": "social",
 		//	 "icon": "fas fa-cloud-sun",
+		//	 "brand": {
+		//		 "color": "#0085FF",
+		//	 },
 		//	 "regex": /bsky\.app\/profile\/([a-zA-Z0-9_]+)/
 		// },
 		"discord": {
 			"name": "Discord",
 			"type": "messaging",
 			"icon": "fab fa-discord",
+			"brand": {
+				"color": "#7289DA",
+			},
 			"regex": /discord\.com\/invite\/([a-zA-Z0-9_]+)/
 		},
 		"telegram": {
 			"name": "Telegram",
 			"type": "messaging",
 			"icon": "fab fa-telegram",
+			"brand": {
+				"color": "#0088CC",
+			},
 			"regex": /t\.me\/([a-zA-Z0-9_]+)/
 		},
 		"whatsapp": {
 			"name": "WhatsApp",
 			"type": "messaging",
 			"icon": "fab fa-whatsapp",
+			"brand": {
+				"color": "#25D366",
+			},
 			"regex": /wa\.me\/([a-zA-Z0-9_]+)/
 		},
 		"signal": {
 			"name": "Signal",
 			"type": "messaging",
 			"icon": "fab fa-signal",
+			"brand": {
+				"color": "#3FBF3F",
+			},
 			"regex": /signal\.org\/([a-zA-Z0-9_]+)/
 		},
 		"skype": {
 			"name": "Skype",
 			"type": "messaging",
 			"icon": "fab fa-skype",
+			"brand": {
+				"color": "#00AFF0",
+			},
 			"regex": /skype\.com\/([a-zA-Z0-9_]+)/
 		},
 		"snapchat": {
 			"name": "Snapchat",
 			"type": "messaging",
 			"icon": "fab fa-snapchat",
+			"brand": {
+				"color": "#FFFC00",
+			},
 			"regex": /snapchat\.com\/add\/([a-zA-Z0-9_]+)/
 		},
 		"kik": {
 			"name": "Kik",
 			"type": "messaging",
 			"icon": "fab fa-kik",
+			"brand": {
+				"color": "#1BBE32",
+			},
 			"regex": /kik\.me\/([a-zA-Z0-9_]+)/
 		},
 		"line": {
 			"name": "Line",
 			"type": "messaging",
 			"icon": "fab fa-line",
+			"brand": {
+				"color": "#00C300",
+			},
 			"regex": /line\.me\/([a-zA-Z0-9_]+)/
 		},
 		"viber": {
 			"name": "Viber",
 			"type": "messaging",
 			"icon": "fab fa-viber",
+			"brand": {
+				"color": "#7BB32E",
+			},
 			"regex": /viber\.com\/([a-zA-Z0-9_]+)/
 		},
 		"wechat": {
 			"name": "WeChat",
 			"type": "messaging",
 			"icon": "fab fa-weixin",
+			"brand": {
+				"color": "#7BB32E",
+			},
 			"regex": /we\.chat\/([a-zA-Z0-9_]+)/
 		},
 		"irc": {
 			"name": "IRC",
 			"type": "messaging",
 			"icon": "fas fa-comments",
+			"brand": {
+				"color": "#FFFFFF",
+			},
 			"regex": /irc:\/\/([a-zA-Z0-9_]+)/
 		},
 		"email": {
 			"name": "Email",
 			"type": "messaging",
 			"icon": "fas fa-envelope",
+			"brand": {
+				"color": "#000000",
+			},
 			"regex": /mailto:([a-zA-Z0-9_]+@[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)/
 		},
 		"email_plaintext": {
 			"name": "Email",
 			"type": "messaging",
 			"icon": "fas fa-envelope",
+			"brand": {
+				"color": "#000000",
+			},
 			"regex": /([a-zA-Z0-9_]+@[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)/
 		},
 		"twitter": {
 			"name": "Twitter",
 			"type": "social",
 			"icon": "fab fa-twitter",
+			"brand": {
+				"color": "#1DA1F2",
+			},
 			"regex": /twitter\.com\/([a-zA-Z0-9_]+)/
 		},
 		"instagram": {
 			"name": "Instagram",
 			"type": "social",
 			"icon": "fab fa-instagram",
+			"brand": {
+				"color": "#E1306C",
+			},
 			"regex": /instagram\.com\/([a-zA-Z0-9_]+)/
 		},
 		"facebook": {
 			"name": "Facebook",
 			"type": "social",
 			"icon": "fab fa-facebook",
+			"brand": {
+				"color": "#1877F2",
+			},
 			"regex": /facebook\.com\/([a-zA-Z0-9_]+)/
 		},
 		"linkedin": {
 			"name": "LinkedIn",
 			"type": "social",
 			"icon": "fab fa-linkedin",
+			"brand": {
+				"color": "#0077B5",
+			},
 			"regex": /linkedin\.com\/in\/([a-zA-Z0-9_]+)/
 		},
 		"twitch": {
 			"name": "Twitch",
 			"type": "content",
 			"icon": "fab fa-twitch",
+			"brand": {
+				"color": "#6441A4",
+			},
 			"regex": /twitch\.tv\/([a-zA-Z0-9_]+)/
 		},
 		"youtube": {
 			"name": "YouTube",
 			"type": "content",
 			"icon": "fab fa-youtube",
+			"brand": {
+				"color": "#FF0000",
+			},
 			"regex": /youtube\.com\/([a-zA-Z0-9_]+)/
 		},
 		"github": {
 			"name": "GitHub",
 			"type": "content",
 			"icon": "fab fa-github",
+			"brand": {
+				"color": "#333333",
+			},
 			"regex": /github\.com\/([a-zA-Z0-9_]+)/
 		},
 		"patreon": {
 			"name": "Patreon",
 			"type": "content",
 			"icon": "fab fa-patreon",
+			"brand": {
+				"color": "#f96854",
+			},
 			"regex": /patreon\.com\/([a-zA-Z0-9_]+)/
+		},
+		"bandcamp": {
+			"name": "Bandcamp",
+			"type": "content",
+			"icon": "fab fa-bandcamp",
+			"brand": {
+				"color": "#629aa9",
+			},
+			"regex": /([a-zA-Z0-9_]+)\/.bandcamp\.com/
+		},
+		"soundcloud": {
+			"name": "SoundCloud",
+			"type": "content",
+			"icon": "fab fa-soundcloud",
+			"brand": {
+				"color": "#ff7700",
+			},
+			"regex": /soundcloud\.com\/([a-zA-Z0-9_]+)/
 		},
 		"onlyfans": {
 			"name": "OnlyFans",
 			"type": "content",
 			"icon": "fas fa-fan",
+			"brand": {
+				"color": "#fbae00",
+			},
 			"regex": /onlyfans\.com\/([a-zA-Z0-9_]+)/
 		},
 		"ko-fi": {
 			"name": "Ko-fi",
 			"type": "content",
 			"icon": "fas fa-coffee",
+			"brand": {
+				"color": "#f16061",
+			},
 			"regex": /ko-fi\.com\/([a-zA-Z0-9_]+)/
 		},
 		"linktree": {
 			"name": "Linktree",
 			"type": "linkhub",
 			"icon": "fas fa-tree",
+			"brand": {
+				"color": "#39e09b",
+			},
 			"regex": /linktr\.ee\/([a-zA-Z0-9_]+)/
 		},
 		"carrd": {
 			"name": "Carrd",
 			"type": "linkhub",
 			"icon": "fas fa-address-card",
+			"brand": {
+				"color": "#2C2F33",
+			},
 			"regex": /([a-zA-Z0-9_]+\.carrd\.co)/
 		},
 	};
