@@ -1,6 +1,6 @@
 # Bluesky Features Extension script
 
-This script adds a number of features to [Bluesky](bsky.app) that are not (currently) available on the app.
+This script adds a number of features to [Bluesky](https://bsky.app) that are not (currently) available on the app.
 It is intended to be used with [Tampermonkey](https://www.tampermonkey.net/) or [Greasemonkey](https://www.greasespot.net/), with an eventual plan for a native browser extension.
 
 ## Table of Contents
