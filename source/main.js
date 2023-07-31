@@ -10,7 +10,7 @@
  * 
  * @fileoverview Main js file for the project
  * @created 2023-07-26
- * @lastModified 2023-07-27
+ * @lastModified 2023-07-31
  */
 
 // Path: source\main.js
@@ -64,6 +64,15 @@ class BSKY_Ext_Profiles {
 				"color": "#7289DA",
 			},
 			"regex": /discord\.com\/invite\/([a-zA-Z0-9_]+)/
+		},
+		"discord.gg": {
+			"name": "Discord",
+			"type": "messaging",
+			"icon": "fab fa-discord",
+			"brand": {
+				"color": "#7289DA",
+			},
+			"regex": /discord\.gg\/([a-zA-Z0-9_]+)/
 		},
 		"telegram": {
 			"name": "Telegram",
@@ -209,6 +218,15 @@ class BSKY_Ext_Profiles {
 			},
 			"regex": /linkedin\.com\/in\/([a-zA-Z0-9_]+)/
 		},
+		"tumblr": {
+			"name": "Tumblr",
+			"type": "social",
+			"icon": "fab fa-tumblr",
+			"brand": {
+				"color": "#36465D",
+			},
+			"regex": /([a-zA-Z0-9_]+)\.tumblr\.com/
+		},
 		"twitch": {
 			"name": "Twitch",
 			"type": "content",
@@ -235,6 +253,51 @@ class BSKY_Ext_Profiles {
 				"color": "#333333",
 			},
 			"regex": /github\.com\/([a-zA-Z0-9_]+)/
+		},
+		"dribbble": {
+			"name": "Dribbble",
+			"type": "content",
+			"icon": "fab fa-dribbble",
+			"brand": {
+				"color": "#EA4C89",
+			},
+			"regex": /dribbble\.com\/([a-zA-Z0-9_]+)/
+		},
+		"behance": {
+			"name": "Behance",
+			"type": "content",
+			"icon": "fab fa-behance",
+			"brand": {
+				"color": "#1769FF",
+			},
+			"regex": /behance\.net\/([a-zA-Z0-9_]+)/
+		},
+		"artstation": {
+			"name": "ArtStation",
+			"type": "content",
+			"icon": "fas fa-palette",
+			"brand": {
+				"color": "#13AFF0",
+			},
+			"regex": /artstation\.com\/([a-zA-Z0-9_]+)/
+		},
+		"deviantart": {
+			"name": "DeviantArt",
+			"type": "content",
+			"icon": "fab fa-deviantart",
+			"brand": {
+				"color": "#05CC47",
+			},
+			"regex": /([a-zA-Z0-9_]+)\.deviantart\.com/
+		},
+		"furaffinity": {
+			"name": "FurAffinity",
+			"type": "content",
+			"icon": "fas fa-paw",
+			"brand": {
+				"color": "#FF6600",
+			},
+			"regex": /furaffinity\.net\/user\/([a-zA-Z0-9_]+)/
 		},
 		"patreon": {
 			"name": "Patreon",
@@ -433,76 +496,6 @@ class BSKY_Ext_Profiles {
 		//		 "border": "#0000"
 		//	 }
 		// },
-		"telegram": {
-			"default": {
-				"background": "#0088CC",
-				"border": "#0088CC",
-			},
-			"hover": {
-				"color": "#0088CC",
-				"border": "#0088CC"
-			}
-		},
-		"discord": {
-			"default": {
-				"background": "#7289DA",
-				"border": "#7289DA",
-			},
-			"hover": {
-				"color": "#7289DA",
-				"border": "#7289DA"
-			}
-		},
-		"twitch": {
-			"default": {
-				"background": "#6441A4",
-				"border": "#6441A4",
-			},
-			"hover": {
-				"color": "#6441A4",
-				"border": "#6441A4"
-			}
-		},
-		"youtube": {
-			"default": {
-				"background": "#FF0000",
-				"border": "#FF0000",
-			},
-			"hover": {
-				"color": "#FF0000",
-				"border": "#FF0000"
-			}
-		},
-		"twitter": {
-			"default": {
-				"background": "#1DA1F2",
-				"border": "#1DA1F2",
-			},
-			"hover": {
-				"color": "#1DA1F2",
-				"border": "#1DA1F2"
-			}
-		},
-		"instagram": {
-			"default": {
-				"background": "#E1306C",
-				"border": "#E1306C",
-			},
-			"hover": {
-				"color": "#E1306C",
-				"border": "#E1306C"
-			}
-		},
-		"facebook": {
-			"default": {
-				"background": "#1877F2",
-				"border": "#1877F2",
-			},
-			"hover": {
-				"color": "#1877F2",
-				"border": "#1877F2"
-			}
-		},
 	};
 
 	/**
@@ -602,8 +595,17 @@ class BSKY_Ext_Profiles {
 			for (const [key, value] of Object.entries(linkTypes)) {
 				// Check if the link matches the link type regex
 				if (link.url.match(value.regex)) {
+					// Get the link brand color
+					let linkColor = value.brand.color;
+					
 					// Get the link style for the link type
 					let linkStyle = linkStyles[value.type];
+
+					// Override the linkStyle colors with the link brand color
+					linkStyle.default.background = linkColor;
+					linkStyle.default.border = linkColor;
+					linkStyle.hover.color = linkColor;
+					linkStyle.hover.border = linkColor;
 
 					// Check if the link type has a style override
 					if (linkStylesOverrides[key]) {		//TODO: Create a linkStylesOverrides object for this instead of using buttonStylesOverrides
@@ -1451,5 +1453,5 @@ class UnderscoreJS {
 
 const _ = new UnderscoreJS();
 const BSKY_E_I = new BSKY_Ext_Imports();
-const BSKY_E_P = new BSKY_Ext_Profiles();
 const BSKY_E_E = new BSKY_Ext_Emojis();
+const BSKY_E_P = new BSKY_Ext_Profiles();
