@@ -1,16 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## Current Version: 0.0.2
+## Current Version: 0.0.3
 ### Added
-- Emoji parser (Twemoji) for posts and bios.
-- More websites to the list of links to parse.
-- [ReadMe.md File](README.md)
-- Changelog.md File
+- API XHR request interception class to parse posts and bios before they are displayed.
 
 ### Changed
-- Extracted the external scripts and stylesheets loading function to its own class (Twemoji, FontAwesome).
-- Changes to the way the script detects what page you're on (still buggy).
+
 
 ## Current Known Issues
 - The way the script currently detects what page you're on is quite buggy and does not always work as intended. This is being worked on.
@@ -21,6 +17,19 @@ All notable changes to this project will be documented in this file.
 ---
 
 ## Previous Versions
+
+### Version 0.0.2
+#### Added
+- Emoji parser (Twemoji) for posts and bios.
+- More websites to the list of links to parse.
+- [ReadMe.md File](README.md)
+- Changelog.md File
+
+#### Changed
+- Extracted the external scripts and stylesheets loading function to its own class (Twemoji, FontAwesome).
+- Changes to the way the script detects what page you're on (still buggy).
+
+---
 
 ### Version 0.0.1
 Initial proof-of-concept version.
